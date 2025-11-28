@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>بوت واتساب — سطح المكتب</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --danger:#ef4444; --btn:#1f2937;
+      --card:#0b1220; --input:#0b1220; --border:#243047;
+    }
+    *{box-sizing:border-box;font-family:system-ui,"Segoe UI",Tahoma,Arial;}
+    body{margin:0;background:var(--bg);color:var(--text);}
+    .wrap{max-width:1100px;margin:20px auto;padding:10px;}
+    .row{display:grid;gap:12px;grid-template-columns:1fr;}
+    @media(min-width:900px){ .row{grid-template-columns:1fr 1fr;} }
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 4px 20px #0003;}
+    h3{margin:6px 0 14px;font-size:18px}
+    button{background:var(--btn);color:var(--text);border:1px solid var(--border);padding:10px 12px;border-radius:10px;cursor:pointer}
+    button.primary{background:var(--accent);color:#072d16;border-color:#16a34a;font-weight:700}
+    button.danger{background:#1f2937;border-color:#3f2329;color:#fecaca}
+    .btns{display:flex;gap:8px;flex-wrap:wrap}
+    .muted{color:var(--muted);font-size:12px}
+    input[type="text"],input[type="number"],textarea,input[type="datetime-local"]{
+      width:100%;padding:10px;border-radius:10px;background:var(--input);color:var(--text);border:1px solid var(--border)
+    }
+    textarea{min-height:120px;resize:vertical}
+    .list{max-height:340px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:6px;background:#0b1220}
+    .group{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:6px;border-bottom:1px dashed #1e293b}
+    .group:last-child{border-bottom:0}
+    .qr-box img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--border)}
+    .status{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .pill{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:#0b1220}
+    .log{background:#000; color:#b2f5ea; font-family:ui-monospace,Consolas,monospace; padding:10px; border-radius:10px; height:200px; overflow:auto; border:1px solid #1f2937}
+    .row3{display:grid;gap:12px;grid-template-columns:1fr}
+    @media(min-width:900px){ .row3{grid-template-columns:1fr 1fr 1fr;} }
+    label{display:block;margin-bottom:6px;font-size:13px;color:#cbd5e1}
+    .chk{display:flex;align-items:center;gap:8px}
+    .last-col{min-width:200px;text-align:start}
+  </style>
+</head>
+<body>
+  <div style="text-align:left;margin-bottom:8px">
+  <a href="./bulk.html" style="color:#93c5fd;text-decoration:none">➡ قسم الإرسال الجماعي</a>
+</div>
+  <div class="wrap">
+    <div class="status">
+      <div class="pill" id="pill-ready">جاري…</div>
+      <div class="pill" id="pill-running">متوقف</div>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <div class="card">
+        <h3>الجلسة</h3>
+        <div class="btns">
+          <button id="btn-show-qr">إظهار QR</button>
+          <button id="btn-fetch-groups">جلب المجموعات</button>
+          <button id="btn-save-groups">حفظ المجموعات</button>
+        </div>
+        <div class="qr-box" id="qr-box" style="margin-top:10px;display:none"></div>
+        <div class="list" id="groups" style="margin-top:10px"></div>
+        <div class="muted" id="groups-hint" style="margin-top:6px">اختر المجموعات المطلوب مراقبتها. عمود "آخر معالجة" يُحدّث بعد كل تشغيل/تحليل.</div>
+      </div>
+
+      <div class="card">
+        <h3>العملاء</h3>
+        <textarea id="clients" placeholder="سطر لكل عميل — صيغة اختيارية: الاسم|الإيموجي"></textarea>
+        <div class="btns" style="margin-top:8px">
+          <button id="btn-save-clients" class="primary">حفظ العملاء</button>
+          <button id="btn-load-clients">تحميل المخزن</button>
+        </div>
+
+        <h3 style="margin-top:18px">الإعدادات</h3>
+        <div class="row3">
+          <div>
+            <label>إيموجي افتراضي</label>
+            <input id="emoji" type="text" value="✅" maxlength="8">
+          </div>
+          <div>
+            <label>ردود/دقيقة</label>
+            <input id="rpm" type="number" value="20" min="0" max="200">
+          </div>
+          <div>
+            <label>مهلة (ث)</label>
+            <input id="cooldown" type="number" value="3" min="0" max="120">
+          </div>
+        </div>
+        <div class="chk" style="margin-top:8px">
+          <input id="normalize" type="checkbox" checked>
+          <label for="normalize">تطبيع عربي</label>
+        </div>
+        <div class="chk" style="margin-top:8px">
+          <input id="modeText" type="checkbox">
+          <label for="modeText">ردّ نص بدل إيموجي</label>
+        </div>
+        <div class="btns" style="margin-top:8px">
+          <button id="btn-save-settings">حفظ الإعدادات</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>التفاعل</h3>
+
+      <div style="margin-bottom:10px">
+        <label for="backlogDate" class="muted">ابدأ الأرشيف من تاريخ/وقت (اختياري):</label>
+        <input id="backlogDate" type="datetime-local" style="width:220px;padding:4px">
+      </div>
+
+      <div class="btns">
+        <button id="btn-start" class="primary">بدء</button>
+        <button id="btn-stop" class="danger">إيقاف</button>
+        <button id="btn-check-backlog">فحص الأرشيف</button>
+        <button id="btn-backlog">تحليل الأرشيف</button>
+      </div>
+
+      <div class="log" id="log" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <script src="../preload.js"></script>
+  <script src="./renderer.js"></script>
+</body>
+</html>
