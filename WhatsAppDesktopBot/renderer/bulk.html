@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <title>إرسال جماعي — بوت واتساب</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#22c55e; --danger:#ef4444; --btn:#1f2937;
+      --card:#0b1220; --input:#0b1220; --border:#243047;
+    }
+    *{box-sizing:border-box;font-family:system-ui,"Segoe UI",Tahoma,Arial}
+    body{margin:0;background:var(--bg);color:var(--text)}
+    .wrap{max-width:1100px;margin:20px auto;padding:10px}
+    a{color:#93c5fd;text-decoration:none}
+    .hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:12px}
+    .btns{display:flex;gap:8px;flex-wrap:wrap}
+    button{background:var(--btn);color:var(--text);border:1px solid var(--border);padding:10px 12px;border-radius:10px;cursor:pointer}
+    button.primary{background:var(--accent);color:#072d16;border-color:#16a34a;font-weight:700}
+    button.danger{background:#1f2937;border-color:#3f2329;color:#fecaca}
+    label{display:block;margin-bottom:6px;font-size:13px;color:#cbd5e1}
+    select,textarea,input[type=number]{width:100%;padding:10px;border-radius:10px;background:var(--input);color:var(--text);border:1px solid var(--border)}
+    textarea{min-height:220px;resize:vertical}
+    .row{display:grid;gap:12px;grid-template-columns:1fr}
+    @media(min-width:900px){ .row{grid-template-columns:1fr 1fr} }
+    .list{max-height:280px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:6px;background:#0b1220}
+    .log{background:#000;color:#b2f5ea;font-family:ui-monospace,Consolas,monospace;padding:10px;border-radius:10px;height:200px;overflow:auto;border:1px solid #1f2937;margin-top:10px}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:#0b1220;margin-left:6px}
+    .muted{color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hdr">
+      <div>
+        <strong>إرسال جماعي — بوت واتساب</strong>
+        <span class="pill" id="pill-ready">جاري…</span>
+        <span class="pill" id="pill-running">متوقف</span>
+      </div>
+      <div><a href="./index.html">⬅ العودة للواجهة الرئيسية</a></div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>اختر المجموعة</label>
+          <div class="btns" style="margin-bottom:8px">
+            <button id="btn-refresh-groups">تحديث المجموعات</button>
+          </div>
+          <select id="groupSelect"></select>
+          <div class="muted" style="margin-top:6px">لوائح المجموعات تُجلب من واتساب بعد الاتصال.</div>
+        </div>
+
+        <div>
+          <label>الإعدادات</label>
+          <div class="row" style="grid-template-columns:1fr 1fr">
+            <div>
+              <label>مهلة (ثوانٍ) بين الرسائل</label>
+              <input type="number" id="delaySec" min="0" value="3">
+            </div>
+            <div>
+              <label>حد أقصى/دقيقة</label>
+              <input type="number" id="rpm" min="1" value="20">
+            </div>
+          </div>
+          <div class="btns" style="margin-top:8px">
+            <button id="btn-save-bulk-settings">حفظ الإعدادات</button>
+            <span class="muted">تحفَظ منفصلة عن إعدادات البوت الأساسي</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <label>الصق الإشعارات هنا</label>
+      <textarea id="bulkInput" placeholder="الصق الإشعارات…"></textarea>
+      <div class="btns" style="margin-top:8px">
+        <button id="btn-parse">تحليل النص</button>
+        <span class="muted">الوضع الحالي: <strong id="splitModeName">تقسيم بالفراغات</strong></span>
+        <button id="btn-toggle-split">تبديل طريقة التقسيم</button>
+      </div>
+      <div class="list" id="preview"></div>
+      <div class="muted">تأكد من المعاينة قبل الإرسال.</div>
+    </div>
+
+    <div class="card">
+      <div class="btns">
+        <button id="btn-start" class="primary">بدء الإرسال</button>
+        <button id="btn-pause">إيقاف مؤقت</button>
+        <button id="btn-resume">استئناف</button>
+        <button id="btn-cancel" class="danger">إلغاء</button>
+        <button id="btn-save-draft">حفظ كمسودة</button>
+        <button id="btn-load-draft">تحميل المسودة</button>
+      </div>
+      <div style="margin-top:8px">
+        التقدم: <span id="progress">0 / 0</span>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <script src="../preload.js"></script>
+  <script src="./bulk.js"></script>
+</body>
+</html>
